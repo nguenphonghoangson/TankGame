@@ -16,6 +16,7 @@ public class EnemyController : MonoBehaviour,IDamageable
     [SerializeField] private ObjectPool objectPool;
     [SerializeField] private float rotationSpeed = 1000f;
     [SerializeField] private GameObject gun;
+    [SerializeField] private GameObject rotate;
     [SerializeField] private bool isRotating = false;
     [SerializeField] private Quaternion targetRotation;
     [SerializeField] private HealthBar healthBar;
@@ -25,70 +26,76 @@ public class EnemyController : MonoBehaviour,IDamageable
 
     // Start is called before the first frame update
     void Awake(){
-                health = maxHealth;
                 player = GameObject.FindGameObjectWithTag("Player");
                 objectPool = FindObjectOfType<ObjectPool>();
                 agent = GetComponent<NavMeshAgent>();
-                targetPosition = GetRandomPositionAroundTurret();
-                Debug.Log(targetPosition);
-                MoveToTargetPosition();
-                healthBar.UpdateHeathBar(maxHealth, health);
-        }
+
+    }
     private void OnEnable()
     {
-        isRotating = false;
+        isRotating = true;
         canAttack = true;
         health = maxHealth;
         healthBar.UpdateHeathBar(maxHealth, health);
         targetPosition = GetRandomPositionAroundTurret();
         MoveToTargetPosition();
+
+
     }
     // Update is called once per frame
     void Update(){
 
-            
-            if (!agent.pathPending && agent.remainingDistance <= stoppingDistance)
-            {
-                
-                RotateTowardsTurret();
-                if (isRotating)
-                    {
-                        
-                        Quaternion newRotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-                        transform.rotation = newRotation;
-
-
-                        float angle = Quaternion.Angle(transform.rotation, targetRotation);
-
-
-                        if (angle < 4f)
-                        {
-
-                            if (canAttack)
+        if (!agent.pathPending && agent.remainingDistance <= stoppingDistance)
+        {
+            targetRotation = RotateTowardsTurret(rotate.transform.position, player.transform.position);
+            if (isRotating){
+                Quaternion newrotation = Quaternion.Lerp(rotate.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                rotate.transform.rotation = newrotation;
+                float angle = Quaternion.Angle(rotate.transform.rotation, targetRotation);
+                if (angle < 4f){
+                    if (canAttack)
                             {
-                                Debug.Log('s');
-
                                 canAttack = false;
-                                Shoot();
-                                StartCoroutine(WaitAndMoveToNewPosition(3f));
+                                Shoot(); 
+                                isRotating = false;
                     }
                 }
-              
             }
+            else
+            {
+                if (Quaternion.Angle(rotate.transform.rotation, transform.rotation) > 1f)
+                {
+                    Debug.Log('-');
+                    Debug.Log(rotate.transform.rotation);
+                    Quaternion newRotation = Quaternion.Lerp(rotate.transform.rotation, transform.rotation, rotationSpeed * Time.deltaTime);
+                    Debug.Log(newRotation);
+                    rotate.transform.rotation = newRotation;
+                }
+                else
+                {
+                    
+                    StartCoroutine(WaitAndMoveToNewPosition(2));
+                }
             }
-     }
 
+
+
+
+        }
+    }
     private IEnumerator WaitAndMoveToNewPosition(float delay)
-    {
+    {   
         yield return new WaitForSeconds(delay); // Chờ trong khoảng thời gian delay
 
+        Debug.Log(rotate.transform.rotation);
         targetPosition = GetRandomPositionAroundTurret();
         MoveToTargetPosition();
+        isRotating = true;
         canAttack = true;
     }
     private void MoveToTargetPosition()
     {
-        agent.SetDestination(targetPosition);
+        agent.SetDestination(targetPosition);   
     }
     private bool IsEnemyAtPosition(Vector3 position, float radius)
     {
@@ -113,7 +120,7 @@ public class EnemyController : MonoBehaviour,IDamageable
 
         Quaternion rotation = Quaternion.Euler(0f, randomAngle, 0f);
         Vector3 newPosition = player.transform.position + rotation * (Vector3.forward * randomDistance);
-        Debug.Log(IsEnemyAtPosition(newPosition, 5f));
+        //Debug.Log(IsEnemyAtPosition(newPosition, 5f));
         while (IsEnemyAtPosition(newPosition, 5f))
         {
             randomAngle = Random.Range(0f, 360f);
@@ -125,13 +132,12 @@ public class EnemyController : MonoBehaviour,IDamageable
         return newPosition;
 
             }
-        private void RotateTowardsTurret()
+        private Quaternion RotateTowardsTurret(Vector3 position,Vector3 targetposition)
         {
-        Vector3 direction = player.transform.position - transform.position + new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
+        Vector3 direction = targetposition - position + new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
         direction.y = 0;
-        targetRotation = Quaternion.LookRotation(direction, Vector3.up);
-        isRotating = true;
-        
+        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+        return targetRotation;
     }
     private void Shoot()
     {

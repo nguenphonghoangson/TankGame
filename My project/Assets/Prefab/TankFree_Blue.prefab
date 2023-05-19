@@ -397,8 +397,9 @@ MonoBehaviour:
   stoppingDistance: 5
   minDistanceToTurret: 5
   objectPool: {fileID: 0}
-  rotationSpeed: 5
+  rotationSpeed: 2
   gun: {fileID: 494511650648997226}
+  rotate: {fileID: 905086840314566997}
   isRotating: 0
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
   healthBar: {fileID: 7277910514701191025}
