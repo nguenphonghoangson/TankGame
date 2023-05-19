@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,7 +24,7 @@ public class EnemyController : MonoBehaviour,IDamageable
     [SerializeField] private TrailRenderer trailRenderer;
     [SerializeField] private GameObject particleSystemContainer;
     [SerializeField] private bool canAttack = true;
-
+    Quaternion init=Quaternion.identity;
     // Start is called before the first frame update
     void Awake(){
                 player = GameObject.FindGameObjectWithTag("Player");
@@ -47,6 +48,13 @@ public class EnemyController : MonoBehaviour,IDamageable
 
         if (!agent.pathPending && agent.remainingDistance <= stoppingDistance)
         {
+            Debug.Log(Quaternion.Equals(init, Quaternion.identity));
+            if (Quaternion.Equals(init, Quaternion.identity))
+            {
+                init = rotate.transform.rotation;
+            }
+            Debug.Log(rotate.transform.rotation);
+            Debug.Log(init);
             targetRotation = RotateTowardsTurret(rotate.transform.position, player.transform.position);
             if (isRotating){
                 Quaternion newrotation = Quaternion.Lerp(rotate.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
@@ -67,13 +75,13 @@ public class EnemyController : MonoBehaviour,IDamageable
                 {
                     Debug.Log('-');
                     Debug.Log(rotate.transform.rotation);
-                    Quaternion newRotation = Quaternion.Lerp(rotate.transform.rotation, transform.rotation, rotationSpeed * Time.deltaTime);
+                    Quaternion newRotation = Quaternion.Lerp(rotate.transform.rotation, init, rotationSpeed * Time.deltaTime);
                     Debug.Log(newRotation);
                     rotate.transform.rotation = newRotation;
                 }
                 else
                 {
-                    
+                    init = Quaternion.identity;
                     StartCoroutine(WaitAndMoveToNewPosition(2));
                 }
             }
