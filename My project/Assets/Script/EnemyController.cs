@@ -47,7 +47,7 @@ public class EnemyController : MonoBehaviour,IDamageable
     }
     // Update is called once per frame
     void Update(){
-
+        IsEnemyAtPosition();
         if (!agent.pathPending && agent.remainingDistance <= stoppingDistance)
         {
             Debug.Log(Quaternion.Equals(init, Quaternion.identity));
@@ -73,11 +73,11 @@ public class EnemyController : MonoBehaviour,IDamageable
             }
             else
             {
-                if (Quaternion.Angle(rotate.transform.rotation, init) >0.01f)
+                if (Quaternion.Angle(rotate.transform.rotation, transform.rotation) >0.01f)
                 {
                     Debug.Log('-');
                     Debug.Log(rotate.transform.rotation);
-                    Quaternion newRotation = Quaternion.Lerp(rotate.transform.rotation, init, rotationSpeed * Time.deltaTime);
+                    Quaternion newRotation = Quaternion.Lerp(rotate.transform.rotation, transform.rotation, rotationSpeed * Time.deltaTime);
                     Debug.Log(newRotation);
                     rotate.transform.rotation = newRotation;
                 }
@@ -105,20 +105,32 @@ public class EnemyController : MonoBehaviour,IDamageable
     {
         agent.SetDestination(targetPosition);   
     }
-    private bool IsEnemyAtPosition(Vector3 position, float radius)
+    private void IsEnemyAtPosition()
     {
-        Collider[] colliders = Physics.OverlapSphere(position, radius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, agent.radius*2f);
 
         foreach (Collider collider in colliders)
         {
             EnemyController enemy = collider.GetComponent<EnemyController>();
-            if (enemy != null)
+            Debug.Log(enemy);
+            if (enemy != null&& enemy.gameObject != gameObject)
             {
-                return true; // Có enemy ở vị trí này
+                Vector3 avoidDirection = transform.position - collider.transform.position;
+                avoidDirection.Normalize();
+
+                // Tạo hướng di chuyển ngẫu nhiên
+                Vector3 randomDirection = Random.insideUnitSphere;
+
+                // Kết hợp hướng ngẫu nhiên với hướng tránh va chạm
+                Vector3 newDirection = avoidDirection + randomDirection;
+                newDirection.Normalize();
+
+                // Đặt hướng di chuyển mới cho agent
+                agent.velocity = newDirection * agent.speed;
             }
+                
         }
 
-        return false; // Không có enemy ở vị trí này
     }
     private Vector3 GetRandomPositionAroundTurret()
     {
@@ -168,4 +180,5 @@ public class EnemyController : MonoBehaviour,IDamageable
             playerscore.Score++;
         };
     }
+
 }
