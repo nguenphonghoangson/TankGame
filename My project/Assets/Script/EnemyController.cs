@@ -25,6 +25,8 @@ public class EnemyController : MonoBehaviour,IDamageable
     [SerializeField] private GameObject particleSystemContainer;
     [SerializeField] private bool canAttack = true;
     Quaternion init=Quaternion.identity;
+
+    private bool reMove = true;
     // Start is called before the first frame update
     void Awake(){
                 player = GameObject.FindGameObjectWithTag("Player");
@@ -71,7 +73,7 @@ public class EnemyController : MonoBehaviour,IDamageable
             }
             else
             {
-                if (Quaternion.Angle(rotate.transform.rotation, transform.rotation) > 1f)
+                if (Quaternion.Angle(rotate.transform.rotation, init) >0.1f)
                 {
                     Debug.Log('-');
                     Debug.Log(rotate.transform.rotation);
@@ -79,27 +81,25 @@ public class EnemyController : MonoBehaviour,IDamageable
                     Debug.Log(newRotation);
                     rotate.transform.rotation = newRotation;
                 }
-                else
+                else if(reMove)
                 {
-                    init = Quaternion.identity;
+                    
                     StartCoroutine(WaitAndMoveToNewPosition(2));
+                    reMove= false;
                 }
             }
-
-
-
-
         }
     }
     private IEnumerator WaitAndMoveToNewPosition(float delay)
     {   
         yield return new WaitForSeconds(delay); // Chờ trong khoảng thời gian delay
-
-        Debug.Log(rotate.transform.rotation);
         targetPosition = GetRandomPositionAroundTurret();
         MoveToTargetPosition();
         isRotating = true;
         canAttack = true;
+        init = Quaternion.identity;
+        reMove= true;
+
     }
     private void MoveToTargetPosition()
     {
@@ -128,18 +128,9 @@ public class EnemyController : MonoBehaviour,IDamageable
 
         Quaternion rotation = Quaternion.Euler(0f, randomAngle, 0f);
         Vector3 newPosition = player.transform.position + rotation * (Vector3.forward * randomDistance);
-        //Debug.Log(IsEnemyAtPosition(newPosition, 5f));
-        while (IsEnemyAtPosition(newPosition, 5f))
-        {
-            randomAngle = Random.Range(0f, 360f);
-            randomDistance = Random.Range(minDistanceToTurret, 60f);
-
-            rotation = Quaternion.Euler(0f, randomAngle, 0f);
-            newPosition = player.transform.position + rotation * (Vector3.forward * randomDistance);
-        }
+        Debug.DrawRay(newPosition, Vector3.up, Color.blue, 5);
         return newPosition;
-
-            }
+    }
         private Quaternion RotateTowardsTurret(Vector3 position,Vector3 targetposition)
         {
         Vector3 direction = targetposition - position + new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
