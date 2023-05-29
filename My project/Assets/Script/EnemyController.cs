@@ -73,7 +73,11 @@ public class EnemyController : MonoBehaviour,IDamageable
             }
             else
             {
+<<<<<<< Updated upstream
                 if (Quaternion.Angle(rotate.transform.rotation, transform.rotation) >0.01f)
+=======
+                if (Quaternion.Angle(rotate.transform.rotation, init) > 0.1f)
+>>>>>>> Stashed changes
                 {
                     Debug.Log('-');
                     Debug.Log(rotate.transform.rotation);
@@ -83,7 +87,11 @@ public class EnemyController : MonoBehaviour,IDamageable
                 }
                 else if(reMove)
                 {
+<<<<<<< Updated upstream
                     
+=======
+                    Debug.Log('*');
+>>>>>>> Stashed changes
                     StartCoroutine(WaitAndMoveToNewPosition(2));
                     reMove= false;
                 }
@@ -97,9 +105,13 @@ public class EnemyController : MonoBehaviour,IDamageable
         MoveToTargetPosition();
         isRotating = true;
         canAttack = true;
+<<<<<<< Updated upstream
         init = Quaternion.identity;
         reMove= true;
 
+=======
+        init = Quaternion.identity; 
+>>>>>>> Stashed changes
     }
     private void MoveToTargetPosition()
     {
@@ -140,10 +152,17 @@ public class EnemyController : MonoBehaviour,IDamageable
 
         Quaternion rotation = Quaternion.Euler(0f, randomAngle, 0f);
         Vector3 newPosition = player.transform.position + rotation * (Vector3.forward * randomDistance);
+<<<<<<< Updated upstream
         Debug.DrawRay(newPosition, Vector3.up, Color.blue, 5);
         return newPosition;
 
     }
+=======
+        //Debug.Log(IsEnemyAtPosition(newPosition, 5f));
+        return newPosition;
+
+     }
+>>>>>>> Stashed changes
         private Quaternion RotateTowardsTurret(Vector3 position,Vector3 targetposition)
         {
         Vector3 direction = targetposition - position + new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
