@@ -73,7 +73,7 @@ public class EnemyController : MonoBehaviour,IDamageable
             }
             else
             {
-                if (Quaternion.Angle(rotate.transform.rotation, init) >0.1f)
+                if (Quaternion.Angle(rotate.transform.rotation, init) >0.01f)
                 {
                     Debug.Log('-');
                     Debug.Log(rotate.transform.rotation);
@@ -130,6 +130,7 @@ public class EnemyController : MonoBehaviour,IDamageable
         Vector3 newPosition = player.transform.position + rotation * (Vector3.forward * randomDistance);
         Debug.DrawRay(newPosition, Vector3.up, Color.blue, 5);
         return newPosition;
+
     }
         private Quaternion RotateTowardsTurret(Vector3 position,Vector3 targetposition)
         {
