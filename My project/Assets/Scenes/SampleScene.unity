@@ -1705,8 +1705,6 @@ MonoBehaviour:
   - {fileID: 1616845906650027981, guid: 99554e060a5b531458803d16029e11a2, type: 3}
   - {fileID: 6677027390007163759, guid: 2d1445cca75aa37408646555a2c7f550, type: 3}
   - {fileID: 1658348770839024497, guid: 60985aa574548974b86f1d2253629b97, type: 3}
-  max: {fileID: 409689875}
-  min: {fileID: 891947079}
   minSpawnInterval: 1
   spawnIntervalDecrease: 0.1
 --- !u!4 &840167469
@@ -35364,7 +35362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76677977448fd5f4b984edca9d4edd9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPoolSize: 3
+  maxPoolSize: 15
 --- !u!4 &1472649098
 Transform:
   m_ObjectHideFlags: 0
